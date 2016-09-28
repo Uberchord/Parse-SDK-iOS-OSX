@@ -22,9 +22,6 @@
 
 #import "PFLogging.h"
 
-static NSTimeInterval sessionResourceTimeout;
-static NSTimeInterval sessionRequestTimeout;
-
 typedef void (^PFURLSessionTaskCompletionHandler)(NSData *data, NSURLResponse *response, NSError *error);
 
 @interface PFURLSession () <NSURLSessionDelegate, NSURLSessionTaskDelegate> {
@@ -45,7 +42,9 @@ typedef void (^PFURLSessionTaskCompletionHandler)(NSData *data, NSURLResponse *r
 - (instancetype)initWithConfiguration:(NSURLSessionConfiguration *)configuration
                              delegate:(id<PFURLSessionDelegate>)delegate {
 
-    [self setTimeoutsForSessionConfiguration:configuration];
+    configuration.timeoutIntervalForResource = 10.0;
+    configuration.timeoutIntervalForResource = 10.0;
+    NSLog(@"Set session timeout to 10 seconds");
     
     // NOTE: cast to id suppresses warning about designated initializer.
     return [(id)self initWithURLSession:[NSURLSession sessionWithConfiguration:configuration
@@ -219,19 +218,6 @@ typedef void (^PFURLSessionTaskCompletionHandler)(NSData *data, NSURLResponse *r
     });
 }
 
-- (void)setTimeoutsForSessionConfiguration:(NSURLSessionConfiguration *)configuration
-{
-    if (sessionRequestTimeout != 0.0) {
-        PFLog(PFLogLevelInfo, PFLoggingTagCommon, @"Creating a session with request timeout %@", @(sessionRequestTimeout));
-        configuration.timeoutIntervalForResource = sessionResourceTimeout;
-    }
-    
-    if (sessionResourceTimeout != 0.0) {
-        PFLog(PFLogLevelInfo, PFLoggingTagCommon, @"Creating a session with resource timeout %@", @(sessionResourceTimeout));
-        configuration.timeoutIntervalForResource = sessionResourceTimeout;
-    }
-}
-
 ///--------------------------------------
 #pragma mark - NSURLSessionTaskDelegate
 ///--------------------------------------
@@ -276,18 +262,6 @@ didReceiveResponse:(NSURLResponse *)response
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
  completionHandler:(void (^)(NSCachedURLResponse *cachedResponse))completionHandler {
     completionHandler(nil); // Prevent any caching for security reasons
-}
-
-///--------------------------------------
-#pragma mark - Global Timeouts
-///--------------------------------------
-
-+ (void)setTimeoutOfRequest:(NSTimeInterval)requestTimeout {
-    sessionRequestTimeout = requestTimeout;
-}
-
-+ (void)setTimeoutOfResource:(NSTimeInterval)resourceTimeout {
-    sessionResourceTimeout = resourceTimeout;
 }
 
 @end

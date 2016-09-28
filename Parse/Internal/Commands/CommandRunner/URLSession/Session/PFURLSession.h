@@ -70,14 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
                          withCancellationToken:(nullable BFCancellationToken *)cancellationToken
                                  progressBlock:(nullable PFProgressBlock)progressBlock;
 
-///--------------------------------------
-#pragma mark - Global Timeouts
-///--------------------------------------
-
-+ (void)setTimeoutOfRequest:(NSTimeInterval)requestTimeout;
-
-+ (void)setTimeoutOfResource:(NSTimeInterval)resourceTimeout;
-
 @end
 
 NS_ASSUME_NONNULL_END
